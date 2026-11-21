@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}All Movies{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <h1>Your collection <span class="count">{{ movies|length }}</span></h1>
+
+    <!-- Search by movie name (sends ?search=... to the home route) -->
+    <form class="search" method="GET" action="{{ url_for('index') }}">
+        <input type="text" name="search" value="{{ search }}" placeholder="Search by movie name">
+        <button class="btn" type="submit">Search</button>
+        {% if search %}
+            <a class="btn btn-light" href="{{ url_for('index') }}">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+{% if movies %}
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Movie</th>
+                <th>Genre</th>
+                <th>Year</th>
+                <th>Rating</th>
+                <th>Language</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+            <tr>
+                <td data-label="ID">{{ movie.movie_id }}</td>
+                <td data-label="Movie" class="movie-name">{{ movie.movie_name }}</td>
+                <td data-label="Genre">{{ movie.genre }}</td>
+                <td data-label="Year">{{ movie.release_year }}</td>
+                <td data-label="Rating"><span class="rating">{{ movie.rating }}</span></td>
+                <td data-label="Language">{{ movie.language }}</td>
+                <td data-label="Actions" class="actions">
+                    <a class="btn btn-small btn-light" href="{{ url_for('edit_movie', movie_id=movie.movie_id) }}">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_movie', movie_id=movie.movie_id) }}"
+                          onsubmit="return confirm('Delete this movie?');">
+                        <button class="btn btn-small btn-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% elif search %}
+    <div class="empty">
+        <p>No movie matches "{{ search }}".</p>
+        <a class="btn" href="{{ url_for('index') }}">Show all movies</a>
+    </div>
+{% else %}
+    <div class="empty">
+        <p>Your shelf is empty. Add the first movie to get started.</p>
+        <a class="btn" href="{{ url_for('add_movie') }}">Add Movie</a>
+    </div>
+{% endif %}
+{% endblock %}
